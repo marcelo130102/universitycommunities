@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id      Int      @id @default(autoincrement())
+  first_name   String
+  username     String   @unique
+  email        String   @unique
+  image_url    String?  @default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png")
+  Posts        Post[]
+  Replies      Reply[]
+  created_at   DateTime @default(now())
+}
+
+// model Community {
+//   community_id   Int      @id @default(autoincrement())
+//   community_name String
+//   description    String?
+//   created_at     DateTime @default(now())
+//   Posts          Post[]
+// }
+
+model Post {
+  post_id          Int       @id @default(autoincrement())
+  title            String
+  content          String
+  publication_date DateTime  @default(now())
+  user_id          Int
+  comments_allowed Boolean   @default(true)
+  // Cantidad de personas para el evento
+  // Virtual presencial
+  // Lugar
+  // Fecha del evento
+  // Hora del evento
+  // Categoria (multiselect)
+  // Imagen - opcional
+  User             User      @relation(fields: [user_id], references: [user_id])
+  Replies          Reply[]
+}
+
+model Reply {
+  reply_id   Int      @id @default(autoincrement())
+  content    String
+  reply_date DateTime @default(now())
+  user_id    Int
+  post_id    Int
+  User       User     @relation(fields: [user_id], references: [user_id])
+  Post       Post     @relation(fields: [post_id], references: [post_id])
+}
